@@ -22,6 +22,7 @@ const DESIGNATION_TYPES = {
 }
 
 // 4. SPARQL_QUERY_0: Mengambil data masjid, filter wilayah, dan properti P131
+// 4. SPARQL_QUERY_0: Mengambil data masjid, filter wilayah, dan properti P131
 const SPARQL_QUERY_0 =
 `SELECT ?siteQid ?siteLabel ?designationQid ?p131Label ?tahunBerdiriMentah WHERE {
   {
@@ -31,11 +32,12 @@ const SPARQL_QUERY_0 =
   }
   ?site rdfs:label ?siteLabel . FILTER(LANG(?siteLabel) = "id") .
   
-  # AMBIL P131 LANGSUNG BESERTA LABEL & GAMBARNYA
+  # AMBIL P131 LANGSUNG BESERTA LABEL
   OPTIONAL {
     ?site wdt:P131 ?p131Lokasi .
     ?p131Lokasi rdfs:label ?p131Label .
     FILTER(LANG(?p131Label) = "id") .
+  } # <--- KURUNG KURAWAL PENUTUP INI YANG SEBELUMNYA HILANG
       
   OPTIONAL { ?site wdt:P571 ?tahunBerdiriMentah . }
   
