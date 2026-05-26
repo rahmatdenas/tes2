@@ -69,54 +69,93 @@ const SPARQL_QUERY_1 =
 const SPARQL_QUERY_3 =
 `SELECT
  ?siteQid
- (SAMPLE(?imgUtama) AS ?image)
+ ?image
  (GROUP_CONCAT(DISTINCT ?vicinityImage;separator="|") AS ?vicinityImages)
- (SAMPLE(?imgMasaLalu) AS ?pastImage)
- (SAMPLE(?wikiTitle) AS ?wikipediaUrlTitle)
+ ?pastImage
+ ?wikipediaUrlTitle
 WHERE {
 
 <SPARQLVALUESCLAUSE>
 
+# GAMBAR UTAMA
 OPTIONAL {
-    ?site p:P18 ?imageStatement .
-    ?imageStatement ps:P18 ?imgUtama .
+    {
+        SELECT ?site (MIN(?statementId) AS ?firstStatement)
+        WHERE {
 
-    FILTER NOT EXISTS {
-        ?imageStatement pq:P3831 wd:Q16189205
+            ?site p:P18 ?stmt .
+
+            BIND(STR(?stmt) AS ?statementId)
+
+            ?stmt ps:P18 ?imgUtama .
+
+            FILTER NOT EXISTS {
+                ?stmt pq:P3831 wd:Q16189205
+            }
+
+            FILTER NOT EXISTS {
+                ?stmt pq:P180 wd:Q192630
+            }
+
+        }
+        GROUP BY ?site
     }
 
-    FILTER NOT EXISTS {
-        ?imageStatement pq:P180 wd:Q192630
-    }
+    ?site p:P18 ?statement .
+    BIND(STR(?statement) AS ?statementId)
+
+    FILTER(?statementId=?firstStatement)
+
+    ?statement ps:P18 ?image .
 }
 
+# GAMBAR LINGKUNGAN
 OPTIONAL {
-    ?site p:P18 ?vicinityStatement .
-    ?vicinityStatement ps:P18 ?vicinityImage .
+
+    ?site p:P18 ?vicinityStmt .
+    ?vicinityStmt ps:P18 ?vicinityImage .
 
     FILTER EXISTS {
-        ?vicinityStatement pq:P3831 wd:Q16189205
+        ?vicinityStmt pq:P3831 wd:Q16189205
     }
 }
 
+# MASA LALU
 OPTIONAL {
-    ?site p:P18 ?pastImgStmt .
-    ?pastImgStmt ps:P18 ?imgMasaLalu .
 
-    ?pastImgStmt pq:P180 wd:Q192630 .
+    ?site p:P18 ?pastStmt .
+    ?pastStmt ps:P18 ?pastImage .
+
+    ?pastStmt pq:P180 wd:Q192630 .
 }
 
 OPTIONAL {
     ?wikipedia schema:about ?site ;
                schema:isPartOf <https://id.wikipedia.org/> .
 
-    BIND(SUBSTR(STR(?wikipedia),31) AS ?wikiTitle)
+    BIND(
+        SUBSTR(
+            STR(?wikipedia),
+            31
+        )
+        AS ?wikipediaUrlTitle
+    )
 }
 
-BIND(SUBSTR(STR(?site),32) AS ?siteQid)
+BIND(
+    SUBSTR(
+        STR(?site),
+        32
+    )
+    AS ?siteQid
+)
 
 }
-GROUP BY ?siteQid`
+GROUP BY
+?siteQid
+?image
+?pastImage
+?wikipediaUrlTitle`
 
 // 7. ABOUT_SPARQL_QUERY: Disesuaikan menggunakan logika wilayah
 const ABOUT_SPARQL_QUERY =
