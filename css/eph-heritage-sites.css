@@ -149,6 +149,7 @@ optgroup option {
 #details .designations {
   margin: 15px 0 0 0;
   padding: 0;
+  overflow: hidden;  /* TAMBAHAN BARU: Memaksa UL menghormati batas gambar */
 }
 
 #details .designations li {
@@ -156,6 +157,7 @@ optgroup option {
   list-style: none;
   padding: 0 0 15px 65px;
   min-height: 50px;
+  margin-right: 15px; /* TAMBAHAN BARU: Memberi jarak aman di sebelah kanan agar teks tidak menabrak gambar */
 }
 
 #details .designations li h3 {
