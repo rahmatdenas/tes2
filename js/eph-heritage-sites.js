@@ -3,16 +3,14 @@
 function loadPrimaryData() {
   doPreProcessing();
   populateDesignationTypesData()
-    .then(populateCoordinatesData)
-    .then(populateMapAndIndex)
     .then(() => {
-      // 1. BEBASKAN UI: Langsung matikan layar loading dan tampilkan peta!
-      enableApp(); 
-      
-      // 2. KERJA SILUMAN: Tarik data gambar perlahan di belakang layar
-      // Pengguna tidak akan sadar ini sedang berjalan
-      populateImageAndWikipediaData(); 
-    });
+      // Menjalankan pencarian Koordinat dan Gambar secara BERSAMAAN (Paralel)
+      return Promise.all([
+        populateCoordinatesData().then(populateMapAndIndex), // Jalur 1: Tarik koordinat lalu gambar petanya
+        populateImageAndWikipediaData()                      // Jalur 2: Tarik gambar & data Wikipedia
+      ]);
+    })
+    .then(enableApp);
 }
 
 // Performs pre data post-processing: mainly initialize static content
