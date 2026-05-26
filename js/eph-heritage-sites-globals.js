@@ -57,7 +57,7 @@ const SPARQL_QUERY_1 =
 
 // 6. SPARQL_QUERY_3: Tetap sama (Mengambil gambar dan link Wikipedia)
 const SPARQL_QUERY_3 =
-`SELECT ?siteQid ?image ?vicinityImage ?vicinityArtist ?vicinityLicense ?pastImage ?wikipediaUrlTitle WHERE {
+`SELECT ?siteQid ?image ?vicinityImage ?pastImage ?wikipediaUrlTitle WHERE {
   <SPARQLVALUESCLAUSE>
   
   # 1. AMBIL GAMBAR UTAMA
@@ -67,13 +67,11 @@ const SPARQL_QUERY_3 =
     FILTER NOT EXISTS { ?imageStatement pq:P3831 wd:Q16189205 }
   }
   
-  # 2. AMBIL GAMBAR LINGKUNGAN SEKITAR (Vicinity) + DATA KREDIT
+  # 2. AMBIL GAMBAR LINGKUNGAN SEKITAR
   OPTIONAL {
     ?site p:P18 ?vicinityStatement .
     ?vicinityStatement ps:P18 ?vicinityImage .
     FILTER EXISTS { ?vicinityStatement pq:P3831 wd:Q16189205 }
-    OPTIONAL { ?vicinityImage wdt:P170 ?artistObj . ?artistObj rdfs:label ?vicinityArtist . FILTER(LANG(?vicinityArtist) = "id") }
-    OPTIONAL { ?vicinityImage wdt:P275 ?licObj . ?licObj wdt:P1813 ?vicinityLicense . FILTER(LANG(?vicinityLicense) = "en") }
   }
 
   # 3. KODE BARU: AMBIL GAMBAR MASA LALU (Eksklusif P180 = Q192630)
