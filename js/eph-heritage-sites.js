@@ -3,12 +3,11 @@
 function loadPrimaryData() {
   doPreProcessing();
   populateDesignationTypesData()
-    .then(populateCoordinatesData)
-    .then(populateMapAndIndex)
     .then(() => {
-      // HANYA MENGAMBIL GAMBAR DAN WIKIPEDIA, QUERY_2 SUDAH DIHAPUS
+      // Menjalankan pencarian Koordinat dan Gambar secara BERSAMAAN (Paralel)
       return Promise.all([
-        populateImageAndWikipediaData(),
+        populateCoordinatesData().then(populateMapAndIndex), // Jalur 1: Tarik koordinat lalu gambar petanya
+        populateImageAndWikipediaData()                      // Jalur 2: Tarik gambar & data Wikipedia
       ]);
     })
     .then(enableApp);
