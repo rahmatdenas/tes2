@@ -271,7 +271,20 @@ if (record.vicinityImages && record.vicinityImages.length > 0) {
     articleHtml = '<div class="article main-text nodata"><p>Situs ini belum memiliki artikel Wikipedia berbahasa Indonesia.</p></div>';
   }
 
-  let designationsHtml = '<h2>Informasi</h2><ul class="designations">';
+// ====================================================================
+  // PENYUSUNAN BLOK INFORMASI (STRUKTUR HTML BARU)
+  // ====================================================================
+  let designationsHtml = '<h2>Informasi</h2>';
+
+  // 1. Cetak gambar daerah langsung di bawah H2 (di luar <ul>)
+  if (record.lokasiImage) {
+    designationsHtml += `<div style="margin-top: 10px; margin-bottom: 20px;">${generateFigure(record.lokasiImage)}</div>`;
+  }
+
+  // 2. Buka tag <ul> untuk daftar informasi
+  designationsHtml += '<ul class="designations">';
+
+  // 3. Looping isi informasi daerah
   Object.keys(record.designations)
     .map(qid => [qid, DESIGNATION_TYPES[qid].order]) 
     .sort((a, b) => a[1] - b[1])
@@ -280,7 +293,7 @@ if (record.vicinityImages && record.vicinityImages.length > 0) {
 
       let type = DESIGNATION_TYPES[designationQid];
 
-      // 1. Format Tahun Berdiri
+      // Format Tahun Berdiri
       let infoTahunHtml = '';
       if (record.tahunBerdiri) {
         infoTahunHtml = `<p>Didirikan: ${record.tahunBerdiri}</p>`;
@@ -288,19 +301,11 @@ if (record.vicinityImages && record.vicinityImages.length > 0) {
         infoTahunHtml = `<p>Didirikan: Data belum tersedia</p>`;
       }
 
-    // 2. Format Terletak di
+      // Format Terletak di
       let teksLokasi = record.lokasiSpesifik || ORGS[type.org];
       let infoLokasiHtml = `<p>Terletak di: <b>${teksLokasi}</b></p>`;
-      
-      // ============================================================
-      // KODE BARU: Cetak Gambar Daerah Administratif (Jika Ada)
-      // ============================================================
-      let gambarLokasiHtml = '';
-      if (record.lokasiImage) {
-        // Kita kurangi sedikit margin agar merapat dengan teks "Terletak di"
-        gambarLokasiHtml = `<div style="margin-top: 10px; margin-bottom: 20px;">${generateFigure(record.lokasiImage)}</div>`;
-      }
 
+      // Masukkan ke dalam <li> TANPA gambar lokasi (karena sudah di atas)
       designationsHtml +=
         '<li>' +
           `<h3>${type.name}</h3>` +
@@ -308,13 +313,14 @@ if (record.vicinityImages && record.vicinityImages.length > 0) {
             `<img src="img/org_logo_${type.org.toLowerCase()}.svg">` + 
           '</div>' +
           infoLokasiHtml + 
-          gambarLokasiHtml + // <--- Masukkan gambar daerah di sini
           infoTahunHtml +
         '</li>';
         
     });
     
+  // 4. Tutup tag <ul>
   designationsHtml += '</ul>';
+  // ====================================================================
 
   let panelElem = document.createElement('div');
   panelElem.innerHTML =
