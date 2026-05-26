@@ -66,6 +66,7 @@ const SPARQL_QUERY_1 =
 // (CATATAN: SPARQL_QUERY_2 SUDAH KITA HAPUS SEPENUHNYA AGAR SERVER TIDAK DOWN)
 
 // 6. SPARQL_QUERY_3: Mengambil gambar dan link Wikipedia
+const SPARQL_QUERY_3 =
 `SELECT ?siteQid (SAMPLE(?imgUtama) AS ?image) (GROUP_CONCAT(DISTINCT ?vicinityImage; separator=",") AS ?vicinityImagesStr) (SAMPLE(?imgMasaLalu) AS ?pastImage) (SAMPLE(?wikiTitle) AS ?wikipediaUrlTitle) WHERE {
   <SPARQLVALUESCLAUSE>
   
