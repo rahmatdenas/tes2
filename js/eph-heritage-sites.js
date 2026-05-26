@@ -92,11 +92,9 @@ function populateImageAndWikipediaData() {
     function(result) {
       let record = Records[result.siteQid.value];
       
-      // 1. KUNCI GAMBAR UTAMA (Wajib ada if (!record.imageFilename))
+      // 1. GAMBAR UTAMA (Gembok dilepas agar mendarat di gambar urutan pertama)
       if ('image' in result) {
-        if (!record.imageFilename) {
-          record.imageFilename = extractImageFilename(result.image);
-        }
+        record.imageFilename = extractImageFilename(result.image);
       }
       
       // 2. ARTIKEL WIKIPEDIA
@@ -104,7 +102,7 @@ function populateImageAndWikipediaData() {
         record.articleTitle = decodeURIComponent(result.wikipediaUrlTitle.value);
       }
 
-      // 3. GAMBAR LINGKUNGAN SEKITAR (Disimpan berlapis di array)
+      // 3. GAMBAR LINGKUNGAN SEKITAR (Berlapis di dalam array)
       if (!record.vicinityImages) {
         record.vicinityImages = [];
       }
@@ -115,11 +113,9 @@ function populateImageAndWikipediaData() {
         }
       }
 
-      // 4. KUNCI GAMBAR MASA LALU (Wajib ada if (!record.pastImage))
+      // 4. GAMBAR MASA LALU (Gembok dilepas dengan alasan yang sama)
       if ('pastImage' in result) {
-        if (!record.pastImage) {
-          record.pastImage = extractImageFilename(result.pastImage);
-        }
+        record.pastImage = extractImageFilename(result.pastImage);
       }
     },
   );
