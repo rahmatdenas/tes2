@@ -297,7 +297,7 @@ if (record.pastImage) {
 
       // Format Terletak di
       let teksLokasi = record.lokasiSpesifik || ORGS[type.org];
-      let infoLokasiHtml = `<p>Terletak di: <b>${teksLokasi}</b></p>`;
+      let infoLokasiHtml = `<p>Terletak di: ${teksLokasi}</p>`;
 
       // Masukkan ke dalam <li> TANPA gambar lokasi (karena sudah di atas)
       designationsHtml +=
