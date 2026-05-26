@@ -92,43 +92,34 @@ function populateImageAndWikipediaData() {
     function(result) {
       let record = Records[result.siteQid.value];
       
-      // 1. Gambar Utama
-if ('image' in result) {
-  // Hanya isi gambarnya JIKA variabel imageFilename masih kosong
-  if (!record.imageFilename) {
-    record.imageFilename = extractImageFilename(result.image);
-  }
-}
+      // 1. KUNCI GAMBAR UTAMA (Wajib ada if (!record.imageFilename))
+      if ('image' in result) {
+        if (!record.imageFilename) {
+          record.imageFilename = extractImageFilename(result.image);
+        }
+      }
       
-      // 2. Artikel Wikipedia
+      // 2. ARTIKEL WIKIPEDIA
       if ('wikipediaUrlTitle' in result) {
         record.articleTitle = decodeURIComponent(result.wikipediaUrlTitle.value);
       }
 
-      // ====================================================================
-      // KODE BARU: SKENARIO PINTAR UNTUK GAMBAR LINGKUNGAN SEKITAR
-      // ====================================================================
-      
-      // Inisialisasi array daftar gambar tambahan jika belum ada
+      // 3. GAMBAR LINGKUNGAN SEKITAR (Disimpan berlapis di array)
       if (!record.vicinityImages) {
         record.vicinityImages = [];
       }
-
-      // Masukkan gambar lingkungan sekitar ke dalam daftar (pastikan tidak duplikat)
       if ('vicinityImage' in result) {
         let fotoTambahan = extractImageFilename(result.vicinityImage);
         if (!record.vicinityImages.includes(fotoTambahan)) {
           record.vicinityImages.push(fotoTambahan);
         }
       }
-      // ====================================================================
 
-      // ====================================================================
-      // KODE BARU: Simpan Gambar Masa Lalu (Cukup 1 saja)
-      // ====================================================================
-      // !record.pastImage memastikan JS hanya menyimpan gambar pertama yg ditemukan
-      if ('pastImage' in result && !record.pastImage) {
-        record.pastImage = extractImageFilename(result.pastImage);
+      // 4. KUNCI GAMBAR MASA LALU (Wajib ada if (!record.pastImage))
+      if ('pastImage' in result) {
+        if (!record.pastImage) {
+          record.pastImage = extractImageFilename(result.pastImage);
+        }
       }
     },
   );
