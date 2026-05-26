@@ -26,10 +26,19 @@ const DESIGNATION_TYPES = {
 const SPARQL_QUERY_0 =
 `SELECT ?siteQid ?siteLabel ?designationQid ?p131Label ?tahunBerdiriMentah WHERE {
   {
-    ?site wdt:P31 wd:Q32815 . 
+    # 1. Kunci wilayahnya
+    VALUES ?designation { wd:Q7253 wd:Q7248 wd:Q7258 }
+    
+    # 2. Matikan otak otomatis server
+    hint:Query hint:optimizer "None" .
+    
+    # 3. Cari SEMUA item di wilayah tersebut DULU
     ?site wdt:P131+ ?designation .
-    FILTER ( ?designation IN ( wd:Q7253, wd:Q7248, wd:Q7258 ))
+    
+    # 4. BARU saring yang berstatus Masjid
+    ?site wdt:P31 wd:Q32815 . 
   }
+  
   ?site rdfs:label ?siteLabel . FILTER(LANG(?siteLabel) = "id") .
   
   OPTIONAL {
