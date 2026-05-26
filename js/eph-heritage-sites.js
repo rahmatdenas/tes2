@@ -45,12 +45,18 @@ function populateDesignationTypesData() {
         record.designations[designationQid] = new Designation();
       }
       
-      // ============================================================
-      // KODE BARU: Simpan label P131 langsung milik masjid ke record
+    // ============================================================
+      // KODE BARU: Simpan label P131 dan Gambar Daerah Administratif
       // ============================================================
       if ('p131Label' in result && result.p131Label.value) {
         record.lokasiSpesifik = result.p131Label.value;
       }
+
+      // Tambahan untuk menyimpan nama file gambar daerahnya
+      if ('p131Image' in result && result.p131Image.value) {
+        record.lokasiImage = extractImageFilename(result.p131Image);
+      }
+      // ============================================================
 
       if (!record.tahunBerdiri && result.tahunBerdiriMentah && result.tahunBerdiriMentah.value) {
         record.tahunBerdiri = result.tahunBerdiriMentah.value.substring(0, 4);
@@ -282,9 +288,18 @@ if (record.vicinityImages && record.vicinityImages.length > 0) {
         infoTahunHtml = `<p>Didirikan: Data belum tersedia</p>`;
       }
 
-      // 2. Format Terletak di
+    // 2. Format Terletak di
       let teksLokasi = record.lokasiSpesifik || ORGS[type.org];
-      let infoLokasiHtml = `<p>Terletak di: ${teksLokasi}</p>`;
+      let infoLokasiHtml = `<p>Terletak di: <b>${teksLokasi}</b></p>`;
+      
+      // ============================================================
+      // KODE BARU: Cetak Gambar Daerah Administratif (Jika Ada)
+      // ============================================================
+      let gambarLokasiHtml = '';
+      if (record.lokasiImage) {
+        // Kita kurangi sedikit margin agar merapat dengan teks "Terletak di"
+        gambarLokasiHtml = `<div style="margin-top: 10px; margin-bottom: 20px;">${generateFigure(record.lokasiImage)}</div>`;
+      }
 
       designationsHtml +=
         '<li>' +
@@ -293,6 +308,7 @@ if (record.vicinityImages && record.vicinityImages.length > 0) {
             `<img src="img/org_logo_${type.org.toLowerCase()}.svg">` + 
           '</div>' +
           infoLokasiHtml + 
+          gambarLokasiHtml + // <--- Masukkan gambar daerah di sini
           infoTahunHtml +
         '</li>';
         
