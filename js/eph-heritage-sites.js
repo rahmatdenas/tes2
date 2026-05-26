@@ -122,6 +122,14 @@ if ('image' in result) {
         }
       }
       // ====================================================================
+
+      // ====================================================================
+      // KODE BARU: Simpan Gambar Masa Lalu (Cukup 1 saja)
+      // ====================================================================
+      // !record.pastImage memastikan JS hanya menyimpan gambar pertama yg ditemukan
+      if ('pastImage' in result && !record.pastImage) {
+        record.pastImage = extractImageFilename(result.pastImage);
+      }
     },
   );
 }
@@ -277,8 +285,8 @@ if (record.vicinityImages && record.vicinityImages.length > 0) {
   let designationsHtml = '<h2>Informasi</h2>';
 
 // 1. Cetak gambar daerah langsung di bawah H2 (di luar <ul>)
-  if (record.lokasiImage) {
-    designationsHtml += generateFigure(record.lokasiImage);
+if (record.pastImage) {
+    designationsHtml += generateFigure(record.pastImage);
   }
 
   // 2. Buka tag <ul> untuk daftar informasi
