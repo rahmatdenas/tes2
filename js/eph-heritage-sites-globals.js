@@ -67,10 +67,10 @@ const SPARQL_QUERY_1 =
 
 // 6. SPARQL_QUERY_3: Mengambil gambar dan link Wikipedia
 const SPARQL_QUERY_3 =
-`SELECT ?siteQid (SAMPLE(?imgUtama) AS ?image) (GROUP_CONCAT(DISTINCT ?vicinityImage; separator=",") AS ?vicinityImagesStr) (SAMPLE(?imgMasaLalu) AS ?pastImage) (SAMPLE(?wikiTitle) AS ?wikipediaUrlTitle) WHERE {
+`SELECT ?siteQid (SAMPLE(?imgUtama) AS ?image) ?vicinityImage (SAMPLE(?imgMasaLalu) AS ?pastImage) (SAMPLE(?wikiTitle) AS ?wikipediaUrlTitle) WHERE {
   <SPARQLVALUESCLAUSE>
   
-  # 1. AMBIL GAMBAR UTAMA
+  # 1. AMBIL GAMBAR UTAMA (Murni 100%: Bukan Lingkungan & Bukan Masa Lalu)
   OPTIONAL {
     ?site p:P18 ?imageStatement .
     ?imageStatement ps:P18 ?imgUtama .
@@ -78,7 +78,7 @@ const SPARQL_QUERY_3 =
     FILTER NOT EXISTS { ?imageStatement pq:P180 wd:Q192630 }
   }
   
-  # 2. AMBIL GAMBAR LINGKUNGAN SEKITAR
+  # 2. AMBIL GAMBAR LINGKUNGAN SEKITAR (Dibiarkan tanpa SAMPLE agar tampil semua)
   OPTIONAL {
     ?site p:P18 ?vicinityStatement .
     ?vicinityStatement ps:P18 ?vicinityImage .
@@ -100,7 +100,7 @@ const SPARQL_QUERY_3 =
   }
   
   BIND (SUBSTR(STR(?site), 32) AS ?siteQid) .
-} GROUP BY ?siteQid`; // <-- KUNCI HEMAT: Group-nya CUKUP ID Masjid saja!
+} GROUP BY ?siteQid ?vicinityImage`;
 
 // 7. ABOUT_SPARQL_QUERY: Disesuaikan menggunakan logika wilayah
 const ABOUT_SPARQL_QUERY =
