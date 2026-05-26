@@ -89,41 +89,51 @@ function populateImageAndWikipediaData() {
   return queryWdqsThenProcess(
     SPARQL_QUERY_3,
     function(result) {
-      let record = Records[result.siteQid.value];
-      
-      // 1. GAMBAR UTAMA (Gembok dipasang kembali agar mengunci gambar pertama yang masuk)
-      if ('image' in result) {
-        if (!record.imageFilename) {
-          record.imageFilename = extractImageFilename(result.image);
-        }
-      }
-      
-      // 2. ARTIKEL WIKIPEDIA
-      if ('wikipediaUrlTitle' in result) {
-        record.articleTitle = decodeURIComponent(result.wikipediaUrlTitle.value);
-      }
+  let record = Records[result.siteQid.value];
 
-      // 3. GAMBAR LINGKUNGAN SEKITAR (Menggunakan unshift untuk membalikkan kembali urutan baris query)
-     record.vicinityImages = [];
 
-if ('vicinityImages' in result &&
-    result.vicinityImages.value) {
-
-    record.vicinityImages =
-        result.vicinityImages.value
-        .split('|')
-        .map(img=>extractImageFilename({value:img}))
-        .filter(Boolean);
+// gambar utama
+if ('image' in result) {
+    record.imageFilename =
+        extractImageFilename(result.image);
 }
 
-      // 4. GAMBAR MASA LALU (Gembok dipasang kembali agar tidak tertimpa baris berikutnya)
-      if ('pastImage' in result) {
-        if (!record.pastImage) {
-          record.pastImage = extractImageFilename(result.pastImage);
-        }
-      }
-    },
-  );
+
+// wikipedia
+if ('wikipediaUrlTitle' in result) {
+    record.articleTitle =
+        decodeURIComponent(
+            result.wikipediaUrlTitle.value
+        );
+}
+
+
+// gambar lingkungan
+record.vicinityImages=[];
+
+if(
+    'vicinityImages' in result &&
+    result.vicinityImages.value
+){
+
+    record.vicinityImages=
+        result.vicinityImages.value
+        .split('|')
+        .map(img=>img.trim())
+        .filter(img=>img!=="")
+        .map(img=>extractImageFilename({
+            value:img
+        }));
+
+}
+
+
+// masa lalu
+if('pastImage' in result){
+    record.pastImage=
+        extractImageFilename(
+            result.pastImage
+        );
 }
 
 function populateDesignationIndex() {
