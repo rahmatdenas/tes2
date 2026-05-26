@@ -57,15 +57,17 @@ const SPARQL_QUERY_1 =
 // (CATATAN: SPARQL_QUERY_2 SUDAH KITA HAPUS SEPENUHNYA AGAR SERVER TIDAK DOWN)
 
 // 6. SPARQL_QUERY_3: Tetap sama (Mengambil gambar dan link Wikipedia)
+// 6. SPARQL_QUERY_3: Mengambil gambar dan link Wikipedia
 const SPARQL_QUERY_3 =
 `SELECT ?siteQid ?image ?vicinityImage ?pastImage ?wikipediaUrlTitle WHERE {
   <SPARQLVALUESCLAUSE>
   
-  # 1. AMBIL GAMBAR UTAMA
+  # 1. AMBIL GAMBAR UTAMA (Murni 100%: Bukan Lingkungan & Bukan Masa Lalu)
   OPTIONAL {
     ?site p:P18 ?imageStatement .
     ?imageStatement ps:P18 ?image .
     FILTER NOT EXISTS { ?imageStatement pq:P3831 wd:Q16189205 }
+    FILTER NOT EXISTS { ?imageStatement pq:P180 wd:Q192630 }
   }
   
   # 2. AMBIL GAMBAR LINGKUNGAN SEKITAR
@@ -75,7 +77,7 @@ const SPARQL_QUERY_3 =
     FILTER EXISTS { ?vicinityStatement pq:P3831 wd:Q16189205 }
   }
 
-  # 3. KODE BARU: AMBIL GAMBAR MASA LALU (Eksklusif P180 = Q192630)
+  # 3. AMBIL GAMBAR MASA LALU
   OPTIONAL {
     ?site p:P18 ?pastImgStmt .
     ?pastImgStmt ps:P18 ?pastImage .
