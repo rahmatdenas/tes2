@@ -59,16 +59,17 @@ const SPARQL_QUERY_1 =
 // 6. SPARQL_QUERY_3: Tetap sama (Mengambil gambar dan link Wikipedia)
 // 6. SPARQL_QUERY_3: Mengambil gambar dan link Wikipedia
 // 6. SPARQL_QUERY_3: Mengambil gambar dan link Wikipedia
+// 6. SPARQL_QUERY_3: Mengambil gambar dan link Wikipedia
 const SPARQL_QUERY_3 =
-`SELECT ?siteQid (SAMPLE(?imgUtama) AS ?image) ?vicinityImage (SAMPLE(?imgMasaLalu) AS ?pastImage) ?wikipediaUrlTitle WHERE {
+`SELECT ?siteQid ?image ?vicinityImage ?pastImage ?wikipediaUrlTitle WHERE {
   <SPARQLVALUESCLAUSE>
   
   # 1. AMBIL GAMBAR UTAMA (Murni 100%: Bukan Lingkungan & Bukan Masa Lalu)
   OPTIONAL {
-    ?site p:P18 ?imgStmt .
-    ?imgStmt ps:P18 ?imgUtama .
-    FILTER NOT EXISTS { ?imgStmt pq:P3831 wd:Q16189205 }
-    FILTER NOT EXISTS { ?imgStmt pq:P180 wd:Q192630 }
+    ?site p:P18 ?imageStatement .
+    ?imageStatement ps:P18 ?image .
+    FILTER NOT EXISTS { ?imageStatement pq:P3831 wd:Q16189205 }
+    FILTER NOT EXISTS { ?imageStatement pq:P180 wd:Q192630 }
   }
   
   # 2. AMBIL GAMBAR LINGKUNGAN SEKITAR
@@ -81,7 +82,7 @@ const SPARQL_QUERY_3 =
   # 3. AMBIL GAMBAR MASA LALU
   OPTIONAL {
     ?site p:P18 ?pastImgStmt .
-    ?pastImgStmt ps:P18 ?imgMasaLalu .
+    ?pastImgStmt ps:P18 ?pastImage .
     ?pastImgStmt pq:P180 wd:Q192630 .
   }
 
@@ -93,7 +94,7 @@ const SPARQL_QUERY_3 =
   }
   
   BIND (SUBSTR(STR(?site), 32) AS ?siteQid) .
-} GROUP BY ?siteQid ?vicinityImage ?wikipediaUrlTitle`;
+}`;
 
 // 7. ABOUT_SPARQL_QUERY: Disesuaikan menggunakan logika wilayah
 const ABOUT_SPARQL_QUERY =
