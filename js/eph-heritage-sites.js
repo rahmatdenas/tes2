@@ -276,9 +276,9 @@ if (record.vicinityImages && record.vicinityImages.length > 0) {
   // ====================================================================
   let designationsHtml = '<h2>Informasi</h2>';
 
-  // 1. Cetak gambar daerah langsung di bawah H2 (di luar <ul>)
+// 1. Cetak gambar daerah langsung di bawah H2 (di luar <ul>)
   if (record.lokasiImage) {
-    designationsHtml += `<div style="margin-top: 10px; margin-bottom: 20px;">${generateFigure(record.lokasiImage)}</div>`;
+    designationsHtml += generateFigure(record.lokasiImage);
   }
 
   // 2. Buka tag <ul> untuk daftar informasi
