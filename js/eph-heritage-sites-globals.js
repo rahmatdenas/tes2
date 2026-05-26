@@ -23,7 +23,7 @@ const DESIGNATION_TYPES = {
 
 // 4. SPARQL_QUERY_0: Mengambil data masjid, filter wilayah, dan properti P131
 const SPARQL_QUERY_0 =
-`SELECT ?siteQid ?siteLabel ?designationQid ?p131Label ?p131Image ?tahunBerdiriMentah WHERE {
+`SELECT ?siteQid ?siteLabel ?designationQid ?p131Label ?tahunBerdiriMentah WHERE {
   {
     ?site wdt:P31 wd:Q32815 . 
     ?site wdt:P131+ ?designation .
@@ -36,11 +36,7 @@ const SPARQL_QUERY_0 =
     ?site wdt:P131 ?p131Lokasi .
     ?p131Lokasi rdfs:label ?p131Label .
     FILTER(LANG(?p131Label) = "id") .
-    
-    # KODE BARU: Ambil gambar daerah administratifnya (jika ada)
-    OPTIONAL { ?p131Lokasi wdt:P18 ?p131Image }
-  }
-  
+      
   OPTIONAL { ?site wdt:P571 ?tahunBerdiriMentah . }
   
   BIND (SUBSTR(STR(?site       ), 32) AS ?siteQid       ) .
@@ -61,7 +57,7 @@ const SPARQL_QUERY_1 =
 
 // 6. SPARQL_QUERY_3: Tetap sama (Mengambil gambar dan link Wikipedia)
 const SPARQL_QUERY_3 =
-`SELECT ?siteQid ?image ?vicinityImage ?wikipediaUrlTitle WHERE {
+`SELECT ?siteQid ?image ?vicinityImage ?vicinityArtist ?vicinityLicense ?pastImage ?wikipediaUrlTitle WHERE {
   <SPARQLVALUESCLAUSE>
   
   # 1. AMBIL GAMBAR UTAMA
@@ -71,14 +67,23 @@ const SPARQL_QUERY_3 =
     FILTER NOT EXISTS { ?imageStatement pq:P3831 wd:Q16189205 }
   }
   
-  # 2. AMBIL GAMBAR LINGKUNGAN SEKITAR
+  # 2. AMBIL GAMBAR LINGKUNGAN SEKITAR (Vicinity) + DATA KREDIT
   OPTIONAL {
     ?site p:P18 ?vicinityStatement .
     ?vicinityStatement ps:P18 ?vicinityImage .
     FILTER EXISTS { ?vicinityStatement pq:P3831 wd:Q16189205 }
+    OPTIONAL { ?vicinityImage wdt:P170 ?artistObj . ?artistObj rdfs:label ?vicinityArtist . FILTER(LANG(?vicinityArtist) = "id") }
+    OPTIONAL { ?vicinityImage wdt:P275 ?licObj . ?licObj wdt:P1813 ?vicinityLicense . FILTER(LANG(?vicinityLicense) = "en") }
   }
 
-  # 3. ARTIKEL WIKIPEDIA (Telah dikembalikan)
+  # 3. KODE BARU: AMBIL GAMBAR MASA LALU (Eksklusif P180 = Q192630)
+  OPTIONAL {
+    ?site p:P18 ?pastImgStmt .
+    ?pastImgStmt ps:P18 ?pastImage .
+    ?pastImgStmt pq:P180 wd:Q192630 .
+  }
+
+  # 4. ARTIKEL WIKIPEDIA
   OPTIONAL {
     ?wikipedia schema:about ?site ;
                schema:isPartOf <https://id.wikipedia.org/> .
