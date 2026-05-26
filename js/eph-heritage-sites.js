@@ -2,15 +2,15 @@
 
 function loadPrimaryData() {
   doPreProcessing();
-  populateDesignationTypesData() // 1. Ambil Data Dasar (Q0)
-    .then(populateCoordinatesData) // 2. LALU Ambil Koordinat (Q1)
-    .then(populateMapAndIndex) // 3. LALU Gambar Peta
+  populateDesignationTypesData()
     .then(() => {
+      // Menjalankan pencarian Koordinat dan Gambar secara BERSAMAAN (Paralel)
       return Promise.all([
-        populateImageAndWikipediaData(), // 4. LALU Ambil Gambar (Q3)
+        populateCoordinatesData().then(populateMapAndIndex), // Jalur 1: Tarik koordinat lalu gambar petanya
+        populateImageAndWikipediaData()                      // Jalur 2: Tarik gambar & data Wikipedia
       ]);
     })
-    .then(enableApp); // 5. Selesai
+    .then(enableApp);
 }
 
 // Performs pre data post-processing: mainly initialize static content
