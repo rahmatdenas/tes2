@@ -91,9 +91,11 @@ function populateImageAndWikipediaData() {
     function(result) {
       let record = Records[result.siteQid.value];
       
-      // 1. GAMBAR UTAMA (Pasti aman karena dikirim cuma 1 dari server)
+      // 1. GAMBAR UTAMA (Gembok dipasang kembali agar mengunci gambar pertama yang masuk)
       if ('image' in result) {
-        record.imageFilename = extractImageFilename(result.image);
+        if (!record.imageFilename) {
+          record.imageFilename = extractImageFilename(result.image);
+        }
       }
       
       // 2. ARTIKEL WIKIPEDIA
@@ -101,24 +103,23 @@ function populateImageAndWikipediaData() {
         record.articleTitle = decodeURIComponent(result.wikipediaUrlTitle.value);
       }
 
-      // 3. GAMBAR LINGKUNGAN SEKITAR (Dipecah dari teks panjang menjadi Array)
-      record.vicinityImages = [];
-      if ('vicinityImagesStr' in result && result.vicinityImagesStr.value) {
-        let stringFoto = result.vicinityImagesStr.value;
-        // Memecah string koma menjadi array nama file gambar
-        let daftarFoto = stringFoto.split(','); 
-        
-        daftarFoto.forEach(fotoUrl => {
-          let namaFile = extractImageFilename({ value: fotoUrl });
-          if (!record.vicinityImages.includes(namaFile)) {
-            record.vicinityImages.push(namaFile);
-          }
-        });
+      // 3. GAMBAR LINGKUNGAN SEKITAR (Menggunakan unshift untuk membalikkan kembali urutan baris query)
+      if (!record.vicinityImages) {
+        record.vicinityImages = [];
+      }
+      if ('vicinityImage' in result) {
+        let fotoTambahan = extractImageFilename(result.vicinityImage);
+        if (!record.vicinityImages.includes(fotoTambahan)) {
+          // unshift akan memasukkan gambar baru ke posisi paling depan array
+          record.vicinityImages.unshift(fotoTambahan);
+        }
       }
 
-      // 4. GAMBAR MASA LALU
+      // 4. GAMBAR MASA LALU (Gembok dipasang kembali agar tidak tertimpa baris berikutnya)
       if ('pastImage' in result) {
-        record.pastImage = extractImageFilename(result.pastImage);
+        if (!record.pastImage) {
+          record.pastImage = extractImageFilename(result.pastImage);
+        }
       }
     },
   );
