@@ -104,16 +104,17 @@ function populateImageAndWikipediaData() {
       }
 
       // 3. GAMBAR LINGKUNGAN SEKITAR (Menggunakan unshift untuk membalikkan kembali urutan baris query)
-      if (!record.vicinityImages) {
-        record.vicinityImages = [];
-      }
-      if ('vicinityImage' in result) {
-        let fotoTambahan = extractImageFilename(result.vicinityImage);
-        if (!record.vicinityImages.includes(fotoTambahan)) {
-          // unshift akan memasukkan gambar baru ke posisi paling depan array
-          record.vicinityImages.unshift(fotoTambahan);
-        }
-      }
+     record.vicinityImages = [];
+
+if ('vicinityImages' in result &&
+    result.vicinityImages.value) {
+
+    record.vicinityImages =
+        result.vicinityImages.value
+        .split('|')
+        .map(img=>extractImageFilename({value:img}))
+        .filter(Boolean);
+}
 
       // 4. GAMBAR MASA LALU (Gembok dipasang kembali agar tidak tertimpa baris berikutnya)
       if ('pastImage' in result) {
