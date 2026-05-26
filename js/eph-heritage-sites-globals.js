@@ -67,95 +67,40 @@ const SPARQL_QUERY_1 =
 
 // 6. SPARQL_QUERY_3: Mengambil gambar dan link Wikipedia
 const SPARQL_QUERY_3 =
-`SELECT
- ?siteQid
- ?image
- (GROUP_CONCAT(DISTINCT ?vicinityImage;separator="|") AS ?vicinityImages)
- ?pastImage
- ?wikipediaUrlTitle
-WHERE {
+`SELECT ?siteQid (SAMPLE(?imgUtama) AS ?image) ?vicinityImage (SAMPLE(?imgMasaLalu) AS ?pastImage) (SAMPLE(?wikiTitle) AS ?wikipediaUrlTitle) WHERE {
+  <SPARQLVALUESCLAUSE>
+  
+  # 1. AMBIL GAMBAR UTAMA (Murni 100%: Bukan Lingkungan & Bukan Masa Lalu)
+  OPTIONAL {
+    ?site p:P18 ?imageStatement .
+    ?imageStatement ps:P18 ?imgUtama .
+    FILTER NOT EXISTS { ?imageStatement pq:P3831 wd:Q16189205 }
+    FILTER NOT EXISTS { ?imageStatement pq:P180 wd:Q192630 }
+  }
+  
+  # 2. AMBIL GAMBAR LINGKUNGAN SEKITAR (Dibiarkan tanpa SAMPLE agar tampil semua)
+  OPTIONAL {
+    ?site p:P18 ?vicinityStatement .
+    ?vicinityStatement ps:P18 ?vicinityImage .
+    FILTER EXISTS { ?vicinityStatement pq:P3831 wd:Q16189205 }
+  }
 
-<SPARQLVALUESCLAUSE>
+  # 3. AMBIL GAMBAR MASA LALU
+  OPTIONAL {
+    ?site p:P18 ?pastImgStmt .
+    ?pastImgStmt ps:P18 ?imgMasaLalu .
+    ?pastImgStmt pq:P180 wd:Q192630 .
+  }
 
-# GAMBAR UTAMA
-OPTIONAL {
-    {
-        SELECT ?site (MIN(?statementId) AS ?firstStatement)
-        WHERE {
-
-            ?site p:P18 ?stmt .
-
-            BIND(STR(?stmt) AS ?statementId)
-
-            ?stmt ps:P18 ?imgUtama .
-
-            FILTER NOT EXISTS {
-                ?stmt pq:P3831 wd:Q16189205
-            }
-
-            FILTER NOT EXISTS {
-                ?stmt pq:P180 wd:Q192630
-            }
-
-        }
-        GROUP BY ?site
-    }
-
-    ?site p:P18 ?statement .
-    BIND(STR(?statement) AS ?statementId)
-
-    FILTER(?statementId=?firstStatement)
-
-    ?statement ps:P18 ?image .
-}
-
-# GAMBAR LINGKUNGAN
-OPTIONAL {
-
-    ?site p:P18 ?vicinityStmt .
-    ?vicinityStmt ps:P18 ?vicinityImage .
-
-    FILTER EXISTS {
-        ?vicinityStmt pq:P3831 wd:Q16189205
-    }
-}
-
-# MASA LALU
-OPTIONAL {
-
-    ?site p:P18 ?pastStmt .
-    ?pastStmt ps:P18 ?pastImage .
-
-    ?pastStmt pq:P180 wd:Q192630 .
-}
-
-OPTIONAL {
+  # 4. ARTIKEL WIKIPEDIA
+  OPTIONAL {
     ?wikipedia schema:about ?site ;
                schema:isPartOf <https://id.wikipedia.org/> .
-
-    BIND(
-        SUBSTR(
-            STR(?wikipedia),
-            31
-        )
-        AS ?wikipediaUrlTitle
-    )
-}
-
-BIND(
-    SUBSTR(
-        STR(?site),
-        32
-    )
-    AS ?siteQid
-)
-
-}
-GROUP BY
-?siteQid
-?image
-?pastImage
-?wikipediaUrlTitle`
+    BIND (SUBSTR(STR(?wikipedia), 31) AS ?wikiTitle) .
+  }
+  
+  BIND (SUBSTR(STR(?site), 32) AS ?siteQid) .
+} GROUP BY ?siteQid ?vicinityImage`;
 
 // 7. ABOUT_SPARQL_QUERY: Disesuaikan menggunakan logika wilayah
 const ABOUT_SPARQL_QUERY =
