@@ -21,33 +21,29 @@ const DESIGNATION_TYPES = {
   // Tambahkan ID Kab/Kota lain di sini dan pastikan urutannya (order) diteruskan
 }
 
-// 4. SPARQL_QUERY_0: Mengambil data lokasi dan LANGSUNG menarik Tahun Berdiri
-// 4. SPARQL_QUERY_0: Mengambil data masjid, filter wilayah, dan properti P131 langsung
+// 4. SPARQL_QUERY_0: Mengambil data masjid, filter wilayah, dan properti P131
 const SPARQL_QUERY_0 =
-`SELECT ?siteQid ?siteLabel ?designationQid ?p131Label ?tahunBerdiriMentah WHERE {
+`SELECT ?siteQid ?siteLabel ?designationQid ?p131Label ?p131Image ?tahunBerdiriMentah WHERE {
   {
-    # 1. Definisikan wilayahnya dulu agar pencarian lebih terarah
-    VALUES ?designation { wd:Q7253 wd:Q7248 wd:Q7258 }
-    
-    # 2. Beri instruksi ke server untuk tidak mencari ke seluruh dunia (Optimasi Kecepatan)
-    hint:Query hint:optimizer "None" .
-    
+    ?site wdt:P31 wd:Q32815 . 
     ?site wdt:P131+ ?designation .
-    ?site wdt:P31 wd:Q32815 .
+    FILTER ( ?designation IN ( wd:Q7253, wd:Q7248, wd:Q7258 ))
   }
-  
-  # Tetap menggunakan filter bahasa asli bawaan Anda
   ?site rdfs:label ?siteLabel . FILTER(LANG(?siteLabel) = "id") .
   
+  # AMBIL P131 LANGSUNG BESERTA LABEL & GAMBARNYA
   OPTIONAL {
     ?site wdt:P131 ?p131Lokasi .
     ?p131Lokasi rdfs:label ?p131Label .
     FILTER(LANG(?p131Label) = "id") .
+    
+    # KODE BARU: Ambil gambar daerah administratifnya (jika ada)
+    OPTIONAL { ?p131Lokasi wdt:P18 ?p131Image }
   }
   
   OPTIONAL { ?site wdt:P571 ?tahunBerdiriMentah . }
   
-  BIND (SUBSTR(STR(?site), 32) AS ?siteQid) .
+  BIND (SUBSTR(STR(?site       ), 32) AS ?siteQid       ) .
   BIND (SUBSTR(STR(?designation), 32) AS ?designationQid) .
 } ORDER BY ?siteLabel`;
 
