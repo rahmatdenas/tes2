@@ -32,16 +32,15 @@ const SPARQL_QUERY_0 =
   }
   ?site rdfs:label ?siteLabel . FILTER(LANG(?siteLabel) = "id") .
   
-  # AMBIL P131 LANGSUNG BESERTA LABEL
   OPTIONAL {
     ?site wdt:P131 ?p131Lokasi .
     ?p131Lokasi rdfs:label ?p131Label .
     FILTER(LANG(?p131Label) = "id") .
-  } # <--- KURUNG KURAWAL PENUTUP INI YANG SEBELUMNYA HILANG
+  }
       
   OPTIONAL { ?site wdt:P571 ?tahunBerdiriMentah . }
   
-  BIND (SUBSTR(STR(?site       ), 32) AS ?siteQid       ) .
+  BIND (SUBSTR(STR(?site), 32) AS ?siteQid) .
   BIND (SUBSTR(STR(?designation), 32) AS ?designationQid) .
 } ORDER BY ?siteLabel`;
 
